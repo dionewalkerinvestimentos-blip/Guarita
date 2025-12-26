@@ -1,0 +1,109 @@
+/* Responsividade Guarita - Adaptações para diferentes dispositivos */
+
+/* Mobile - até 640px */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  /* Cards menores em mobile */
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  /* Botões full-width em mobile */
+  .mobile-full-btn {
+    width: 100%;
+  }
+  
+  /* Texto menor em cards de estatística */
+  .stat-card-mobile h3 {
+    font-size: 1.5rem;
+  }
+  
+  /* Formulários mais compactos */
+  .form-mobile .space-y-4 {
+    gap: 0.75rem;
+  }
+}
+
+/* Tablet - 641px a 1024px */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Grid de 2 colunas para tablets */
+  .tablet-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  /* Cards de estatística em 3 colunas no tablet */
+  .stats-tablet {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Desktop - 1025px a 1440px */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .container {
+    max-width: 1200px;
+  }
+  
+  /* Grid otimizado para desktop */
+  .desktop-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* TV/Tela Grande - acima de 1441px */
+@media (min-width: 1441px) {
+  .container {
+    max-width: 1400px;
+  }
+  
+  /* Textos maiores para TV */
+  .tv-text {
+    font-size: 1.125rem;
+  }
+  
+  .tv-title {
+    font-size: 2rem;
+  }
+  
+  /* Cards maiores para TV */
+  .tv-card {
+    padding: 2rem;
+  }
+  
+  /* Grid expandido para telas grandes */
+  .tv-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Utilitários responsivos */
+.hide-mobile {
+  display: none;
+}
+
+@media (min-width: 641px) {
+  .hide-mobile {
+    display: block;
+  }
+  
+  .mobile-only {
+    display: none;
+  }
+}
+
+/* Animações suaves para transições */
+@media (prefers-reduced-motion: no-preference) {
+  .smooth-transition {
+    transition: all 0.2s ease-in-out;
+  }
+}

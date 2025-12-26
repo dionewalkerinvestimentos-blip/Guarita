@@ -1,0 +1,224 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 20 14% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 10%;
+    
+    /* Field Green - Primary */
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 160 100% 45%;
+    
+    /* Earth Brown - Secondary */
+    --secondary: 25 95% 27%;
+    --secondary-foreground: 0 0% 100%;
+    
+    /* Highlight Orange - Accent */
+    --accent: 17 88% 48%;
+    --accent-foreground: 0 0% 100%;
+    
+    /* Info Blue */
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 100%;
+    
+    /* Warning Yellow */
+    --warning: 45 93% 47%;
+    --warning-foreground: 0 0% 100%;
+    
+    /* Success Green */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    
+    --muted: 20 14% 96%;
+    --muted-foreground: 20 14% 46%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 20 14% 91%;
+    --input: 20 14% 91%;
+    --ring: 160 84% 39%;
+    --radius: 0.75rem;
+    
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 20 14% 26%;
+    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 20 14% 96%;
+    --sidebar-accent-foreground: 20 14% 10%;
+    --sidebar-border: 20 14% 91%;
+    --sidebar-ring: 160 84% 39%;
+    
+    /* Custom gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(160 84% 39%), hsl(160 100% 45%));
+    --gradient-secondary: linear-gradient(135deg, hsl(25 95% 27%), hsl(25 95% 35%));
+    --gradient-accent: linear-gradient(135deg, hsl(17 88% 48%), hsl(17 88% 58%));
+    
+    /* Shadows */
+    --shadow-elegant: 0 10px 30px -10px hsl(160 84% 39% / 0.2);
+    --shadow-glow: 0 0 40px hsl(160 100% 45% / 0.3);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 20 14% 8%;
+    --foreground: 0 0% 98%;
+    --card: 20 14% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 20 14% 10%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 160 100% 45%;
+    
+    --secondary: 25 95% 35%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --accent: 17 88% 55%;
+    --accent-foreground: 0 0% 100%;
+    
+    --info: 199 89% 55%;
+    --info-foreground: 0 0% 100%;
+    
+    --warning: 45 93% 55%;
+    --warning-foreground: 0 0% 100%;
+    
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 100%;
+    
+    --muted: 20 14% 17%;
+    --muted-foreground: 20 14% 65%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 20 14% 17%;
+    --input: 20 14% 17%;
+    --ring: 160 84% 39%;
+    
+    --sidebar-background: 20 14% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 20 14% 16%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 20 14% 16%;
+    --sidebar-ring: 160 84% 39%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Product color utilities */
+@layer utilities {
+  .bg-brown-100 {
+    background-color: rgb(245 237 230);
+  }
+  
+  .text-brown-800 {
+    color: rgb(117 83 57);
+  }
+}
+
+/* TV Mode Optimizations */
+@media screen and (min-width: 1920px) {
+  /* Para TVs Full HD e maiores */
+  .tv-mode {
+    font-size: clamp(1rem, 0.8vw, 1.5rem);
+  }
+  
+  .tv-mode .card-title {
+    font-size: clamp(1.2rem, 1vw, 2rem);
+  }
+  
+  .tv-mode .card-content {
+    padding: clamp(1rem, 1.5vw, 2rem);
+  }
+  
+  .tv-mode .icon-size {
+    width: clamp(1.5rem, 2vw, 3rem);
+    height: clamp(1.5rem, 2vw, 3rem);
+  }
+}
+
+@media screen and (min-width: 2560px) {
+  /* Para TVs 2K */
+  .tv-mode {
+    font-size: clamp(1.2rem, 0.9vw, 1.8rem);
+  }
+  
+  .tv-mode .card-title {
+    font-size: clamp(1.5rem, 1.2vw, 2.5rem);
+  }
+}
+
+@media screen and (min-width: 3840px) {
+  /* Para TVs 4K */
+  .tv-mode {
+    font-size: clamp(1.5rem, 1vw, 2.2rem);
+  }
+  
+  .tv-mode .card-title {
+    font-size: clamp(2rem, 1.5vw, 3rem);
+  }
+  
+  .tv-mode .grid-tv {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+/* Sistema de Cards Inteligentes */
+.card-info-high {
+  /* Muita informação - texto menor, cards mais compactos */
+  line-height: 1.2;
+}
+
+.card-info-medium {
+  /* Informação média - balance */
+  line-height: 1.3;
+}
+
+.card-info-low {
+  /* Pouca informação - texto maior, mais espaçado */
+  line-height: 1.4;
+}
+
+/* Animações suaves para transições */
+.tv-mode * {
+  transition: font-size 0.3s ease, padding 0.3s ease, line-height 0.3s ease;
+}
+
+/* Animação de alerta piscando para caminhões carregando */
+@keyframes blink-alert {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 20px rgba(234, 179, 8, 0.8);
+  }
+}
+
+.loading-truck-alert {
+  animation: blink-alert 1.5s ease-in-out infinite;
+  border-color: rgb(234, 179, 8) !important;
+}

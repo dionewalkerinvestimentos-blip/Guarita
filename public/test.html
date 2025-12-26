@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Sistema Guarita v2.0</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .pass { background: #d4edda; border-color: #c3e6cb; }
+        .fail { background: #f8d7da; border-color: #f5c6cb; }
+        .pending { background: #fff3cd; border-color: #ffeaa7; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Teste das Funcionalidades - Sistema Guarita v2.0</h1>
+    
+    <div class="test pending">
+        <h3>1. Dashboard Principal</h3>
+        <p><strong>Teste:</strong> Verifique se aparece "Total Carregamentos" ao invés de "Total Veículos"</p>
+        <p><strong>Local:</strong> /dashboard</p>
+        <p><strong>Status:</strong> ⏳ Aguardando verificação</p>
+    </div>
+
+    <div class="test pending">
+        <h3>2. Puxe de Algodão</h3>
+        <p><strong>Teste:</strong> Campo "Talhão" deve aparecer no formulário</p>
+        <p><strong>Local:</strong> /cotton-pull</p>
+        <p><strong>Status:</strong> ⏳ Aguardando verificação</p>
+    </div>
+
+    <div class="test pending">
+        <h3>3. Sistema de Carregamento</h3>
+        <p><strong>Teste:</strong> Formulário só aparece após clicar "Novo Carregamento"</p>
+        <p><strong>Local:</strong> /loading</p>
+        <p><strong>Status:</strong> ⏳ Aguardando verificação</p>
+    </div>
+
+    <div class="test pending">
+        <h3>4. Modo TV</h3>
+        <p><strong>Teste:</strong> Cards devem mostrar "Carregando" ao invés de "CARREGA"</p>
+        <p><strong>Local:</strong> /dashboard-portaria</p>
+        <p><strong>Status:</strong> ⏳ Aguardando verificação</p>
+    </div>
+
+    <div class="test pending">
+        <h3>5. Controle de Veículos</h3>
+        <p><strong>Teste:</strong> Data de saída deve ser opcional</p>
+        <p><strong>Local:</strong> /vehicles</p>
+        <p><strong>Status:</strong> ⏳ Aguardando verificação</p>
+    </div>
+
+    <hr>
+    <h2>📋 Instruções:</h2>
+    <ol>
+        <li>Acesse cada URL no seu domínio Vercel</li>
+        <li>Teste cada funcionalidade</li>
+        <li>Se não funcionar, limpe o cache (Ctrl+F5)</li>
+        <li>Verifique se as variáveis de ambiente estão configuradas no Vercel</li>
+    </ol>
+
+    <h2>🚨 Se ainda não funcionar:</h2>
+    <ul>
+        <li>Vá no painel do Vercel</li>
+        <li>Clique em "Deployments"</li>
+        <li>Clique nos 3 pontos do deploy mais recente</li>
+        <li>Clique em "Redeploy"</li>
+    </ul>
+
+    <p><strong>Última atualização:</strong> <span id="timestamp"></span></p>
+
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toLocaleString('pt-BR');
+    </script>
+</body>
+</html>

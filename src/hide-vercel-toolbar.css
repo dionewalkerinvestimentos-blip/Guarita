@@ -1,0 +1,15 @@
+/* Remove Vercel Toolbar e outros elementos indesejados */
+div[data-vercel-toolbar], 
+.vercel-toolbar,
+[class*="VercelToolbar"],
+[id*="vercel-toolbar"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Remove scripts do Vercel Toolbar */
+script[src*="vercel"] {
+  display: none !important;
+}

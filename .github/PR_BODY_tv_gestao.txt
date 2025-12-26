@@ -1,0 +1,16 @@
+﻿- O que foi feito:
+  - Ajuste visual do card "Gestão de Tempo" no dashboard TV.
+  - Cards por placa com totais (rolos e viagens) no canto superior direito.
+  - Viagens agrupadas em colunas de até 3 (13, 46, ...).
+  - Dedupe por número de viagem e filtro para exibir somente viagens do dia.
+  - Corrigida coerção de NULL0 na view do banco; adicionada migração SQL.
+  - Adicionados novos tipos de material (Diesel, Gasolina, Sacaria, Palanque para Cerca, Palanque para Bloco) em `MaterialReceipts`.
+
+- Migração/DB:
+  - Arquivo: `migrations/2025-11-21-update-view_gestao_tempo_cargas.sql`
+  - Observação: recomendo aplicar a migration no Supabase antes de validar em produção.
+
+- Como validar:
+  1. Verificar Deployments no Vercel (Project  Deployments) após merge.
+  2. Conferir view no Supabase e API retornando NULL quando apropriado.
+  3. Validar UI em https://guaritaibasantaluzia.vercel.app/

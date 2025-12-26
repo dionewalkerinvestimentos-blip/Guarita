@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <rect width="32" height="32" fill="#10b981"/>
+  <!-- Cabine do caminhão -->
+  <rect x="3" y="12" width="10" height="8" fill="#ffffff" rx="1"/>
+  <!-- Carroceria -->
+  <rect x="13" y="10" width="14" height="10" fill="#ffffff" rx="1"/>
+  <!-- Rodas -->
+  <circle cx="8" cy="24" r="3" fill="#374151"/>
+  <circle cx="23" cy="24" r="3" fill="#374151"/>
+  <!-- Detalhes da cabine -->
+  <rect x="4" y="13" width="8" height="3" fill="#10b981" rx="0.5"/>
+  <!-- Para-choque -->
+  <rect x="2" y="19" width="2" height="2" fill="#ffffff"/>
+  <!-- Detalhes da carroceria -->
+  <rect x="15" y="12" width="10" height="2" fill="#10b981" rx="0.5"/>
+  <rect x="15" y="15" width="10" height="2" fill="#10b981" rx="0.5"/>
+</svg>
