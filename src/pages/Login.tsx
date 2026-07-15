@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lock, Loader2 } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
+import { hasAuthenticatedSession, useAuth } from "@/hooks/use-auth";
 import logo from "@/assets/BF_logo.png";
 
 const Login = () => {
@@ -13,7 +13,17 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const location = useLocation();
+  const { login, logout } = useAuth();
+  const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname || "/dashboard";
+
+  useEffect(() => {
+    if (hasAuthenticatedSession()) {
+      navigate(from, { replace: true });
+    } else if (localStorage.getItem("isAuthenticated") === "true") {
+      logout();
+    }
+  }, [from, logout, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +37,7 @@ const Login = () => {
     try {
       const success = await login(username, password);
       if (success) {
-        navigate("/dashboard");
+        navigate(from, { replace: true });
       }
     } finally {
       setLoading(false);

@@ -42,6 +42,7 @@ import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/BF_logo.png";
 import { calculateLoadingTime } from "@/lib/time-utils";
 import { getTodayLocalDate, normalizeLocalDate, convertIsoToLocalDateString } from "@/lib/date-utils";
+import { hasAuthenticatedSession, useAuth } from "@/hooks/use-auth";
 
 // Função helper para converter texto para Title Case
 const toTitleCase = (str: string): string => {
@@ -52,6 +53,7 @@ const toTitleCase = (str: string): string => {
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { logout } = useAuth();
   const { vehicles, loading: loadingVehicles, updateVehicle } = useVehicles();
   const { records: cottonRecords, loading: loadingCotton, updateRecord: updateCottonRecord } = useCottonPull();
   const { records: rainRecords, loading: loadingRain } = useRainRecords();
@@ -344,15 +346,15 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem("isAuthenticated");
-    if (!isAuthenticated) {
-      navigate("/login");
+    if (!hasAuthenticatedSession()) {
+      logout();
+      navigate("/login", { replace: true });
     }
-  }, [navigate]);
+  }, [logout, navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("username");
-    navigate("/login");
+    logout();
+    navigate("/login", { replace: true });
   };
 
   const handleMarkExit = async (cottonPullId: string) => {

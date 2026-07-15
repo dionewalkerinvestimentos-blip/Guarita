@@ -10,14 +10,22 @@ export interface User {
   is_active: boolean;
 }
 
+export const hasAuthenticatedSession = () => (
+  localStorage.getItem("isAuthenticated") === "true" &&
+  !!localStorage.getItem("username") &&
+  !!localStorage.getItem("userId")
+);
+
 export const useAuth = () => {
   const { toast } = useToast();
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
+      const normalizedUsername = username.trim();
+      const normalizedPassword = password.trim();
       // Por enquanto, autenticação simples para o usuário guarita
       // TODO: Implementar hash de senha quando a função SQL estiver criada
-      if (username === 'guarita' && password === '123456') {
+      if (normalizedUsername.toLowerCase() === 'guarita' && normalizedPassword === '123456') {
         // Armazenar dados do usuário no localStorage
         localStorage.setItem("isAuthenticated", "true");
         localStorage.setItem("username", "Guarita");
@@ -35,7 +43,7 @@ export const useAuth = () => {
       const { data: users, error } = await supabase
         .from('users')
         .select('id, username, full_name, role, is_active')
-        .eq('username', username)
+        .eq('username', normalizedUsername)
         .eq('is_active', true)
         .single();
 
@@ -89,8 +97,7 @@ export const useAuth = () => {
   };
 
   const getCurrentUser = (): User | null => {
-    const isAuth = localStorage.getItem("isAuthenticated");
-    if (!isAuth) return null;
+    if (!hasAuthenticatedSession()) return null;
 
     return {
       id: localStorage.getItem("userId") || "",
