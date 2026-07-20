@@ -35,7 +35,7 @@ O Vercel está fazendo deploy em uma conta diferente do GitHub (desenvolvedordio
      - Output Directory: `dist`
 
 2. **Configurar Variáveis de Ambiente:**
-   - VITE_SUPABASE_URL: `https://wjnsbrkspgzioafvqfhe.supabase.co`
+   - VITE_SUPABASE_URL: `https://vwtlgddtqxhdusuejtaa.supabase.co`
    - VITE_SUPABASE_ANON_KEY: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqbnNicmtzcGd6aW9hZnZxZmhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA3NDE0MjMsImV4cCI6MjA0NjMxNzQyM30.Cw8bs3aTBe6Qmr-0flDIR-dnx89C1LC0rJR_YCjIKP0`
 
 3. **Configurar Domínio:**

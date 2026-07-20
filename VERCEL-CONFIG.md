@@ -16,7 +16,7 @@
 
 **Variável 1:**
 - **Name:** `VITE_SUPABASE_URL`
-- **Value:** `https://wjnsbrkspgzioafvqfhe.supabase.co`
+ - **Value:** `https://vwtlgddtqxhdusuejtaa.supabase.co`
 - **Environments:** ✅ Production ✅ Preview ✅ Development
 
 **Variável 2:**

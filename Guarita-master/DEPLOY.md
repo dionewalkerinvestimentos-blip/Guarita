@@ -17,7 +17,7 @@ https://github.com/desenvolvedordionewalker-max/Guarita
 2. Acesse: https://vercel.com/projetos-projects-58a6f383/guarita.ibasantaluzia
 3. Configure as variáveis de ambiente:
    ```
-   VITE_SUPABASE_URL=https://wjnsbrkspgzioafvqfhe.supabase.co
+   VITE_SUPABASE_URL=https://vwtlgddtqxhdusuejtaa.supabase.co
    VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqbnNicmtzcGd6aW9hZnZxZmhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyNjY1NDksImV4cCI6MjA3Nzg0MjU0OX0.J3b9opzn066qv2jqWXBtSXugAr30D0xNQM0YuG846og
    ```
 4. Clique em "Redeploy" se necessário

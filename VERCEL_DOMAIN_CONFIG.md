@@ -42,7 +42,7 @@ vercel --prod
 - `env`: Variáveis de ambiente do Supabase
 
 #### Variáveis de Ambiente:
-- `VITE_SUPABASE_URL`: https://wjnsbrkspgzioafvqfhe.supabase.co
+- `VITE_SUPABASE_URL`: https://vwtlgddtqxhdusuejtaa.supabase.co
 - `VITE_SUPABASE_ANON_KEY`: (chave configurada)
 
 ### 5. Verificação

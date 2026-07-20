@@ -23,6 +23,25 @@
 
   <body>
     <div id="root"></div>
+    <script>
+      // DEV-only: unregister service workers and clear caches on localhost
+      (function(){
+        try {
+          if (location && (location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations()
+                .then(function(regs){ regs.forEach(function(r){ try{ r.unregister(); }catch(e){} }); })
+                .catch(function(){});
+            }
+            if (typeof caches !== 'undefined') {
+              caches.keys().then(function(keys){ keys.forEach(function(k){ try{ caches.delete(k); }catch(e){} }); }).catch(function(){});
+            }
+            try { localStorage.clear(); } catch(e) {}
+            console.info('Dev cleanup: service workers unregistered, caches/localStorage cleared (localhost)');
+          }
+        } catch(e) {}
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

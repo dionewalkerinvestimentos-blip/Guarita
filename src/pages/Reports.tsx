@@ -109,18 +109,16 @@ const Reports = () => {
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
   
-  const thisMonthVehicles = vehicles.filter(v => 
-    new Date(v.date).getMonth() === currentMonth && 
-    new Date(v.date).getFullYear() === currentYear
-  );
-  
-  const carregamentosPluma = thisMonthVehicles.filter(v => 
-    v.type === 'Carregamento' && v.purpose?.toLowerCase().includes('pluma')
-  );
-  
-  const carregamentosCaroco = thisMonthVehicles.filter(v => 
-    v.type === 'Carregamento' && v.purpose?.toLowerCase().includes('caroço')
-  );
+  // Contagens mensais baseadas em loadingRecords.loaded_at (data em que foi marcado como carregado)
+  const carregamentosConcluidosMonth = loadingRecords.filter(l => {
+    if (!l.loaded_at) return false;
+    const d = new Date(l.loaded_at);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear && l.status === 'carregado';
+  });
+
+  const carregamentosPluma = carregamentosConcluidosMonth.filter(l => l.product === 'Pluma');
+  const carregamentosCaroco = carregamentosConcluidosMonth.filter(l => l.product === 'Caroço');
+  const totalVehiclesMonth = carregamentosConcluidosMonth.length;
   
   const totalRolls = cottonRecords.reduce((sum, r) => sum + r.rolls, 0);
   
@@ -275,7 +273,7 @@ const Reports = () => {
   const stats = [
     { 
       label: "Total de Veículos (Mês)", 
-      value: loadingVehicles ? "..." : thisMonthVehicles.length.toString(), 
+      value: loadingVehicles ? "..." : totalVehiclesMonth.toString(), 
       change: "+12%" 
     },
     { 
@@ -303,6 +301,25 @@ const Reports = () => {
       value: loadingEquipment ? "..." : equipmentsSaidas.toString(), 
       change: "+2%" 
     },
+    {
+      label: "Materiais Recebidos (Mês)",
+      value: loadingMaterials ? "..." : (() => {
+        try {
+          const monthMaterials = materialRecords.filter(m => {
+            const d = new Date(m.date);
+            return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+          });
+          const deliveries = monthMaterials.length;
+          const totalKg = monthMaterials
+            .filter(m => m.unit_type === 'KG')
+            .reduce((s, m) => s + (m.net_weight || 0), 0);
+          return `${deliveries} entregas • ${totalKg.toLocaleString('pt-BR')} kg`;
+        } catch (e) {
+          return "0";
+        }
+      })(),
+      change: "+0%"
+    }
   ];
 
   // Top produtores baseado em dados reais

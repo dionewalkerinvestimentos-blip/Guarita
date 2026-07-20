@@ -49,18 +49,18 @@ const Reports = () => {
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
   
-  const thisMonthVehicles = vehicles.filter(v => 
-    new Date(v.date).getMonth() === currentMonth && 
-    new Date(v.date).getFullYear() === currentYear
-  );
-  
-  const carregamentosPluma = thisMonthVehicles.filter(v => 
-    v.type === 'Carregamento' && v.purpose?.toLowerCase().includes('pluma')
-    const filaCarregamento = loadingRecords.filter(l => !l.entry_date);
-  
-  const carregamentosCaroco = thisMonthVehicles.filter(v => 
-    v.type === 'Carregamento' && v.purpose?.toLowerCase().includes('caroço')
-  );
+  // Carregamentos do mês (usar `loadingRecords.loaded_at` para contabilizar quando marcado como carregado)
+  const carregamentosConcluidosMonth = loadingRecords.filter(l => {
+    if (!l.loaded_at) return false;
+    const d = new Date(l.loaded_at);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear && l.status === 'carregado';
+  });
+
+  const carregamentosPluma = carregamentosConcluidosMonth.filter(l => l.product === 'Pluma');
+  const carregamentosCaroco = carregamentosConcluidosMonth.filter(l => l.product === 'Caroço');
+  const totalVehiclesMonth = carregamentosConcluidosMonth.length;
+
+  const filaCarregamento = loadingRecords.filter(l => !l.entry_date);
   
   const totalRolls = cottonRecords.reduce((sum, r) => sum + r.rolls, 0);
   
@@ -215,7 +215,7 @@ const Reports = () => {
   const stats = [
     { 
       label: "Total de Veículos (Mês)", 
-      value: loadingVehicles ? "..." : thisMonthVehicles.length.toString(), 
+      value: loadingVehicles ? "..." : totalVehiclesMonth.toString(), 
       change: "+12%" 
     },
     { 
@@ -243,6 +243,27 @@ const Reports = () => {
       value: loadingEquipment ? "..." : equipmentsSaidas.toString(), 
       change: "+2%" 
     },
+    {
+      label: "Materiais Recebidos (Mês)",
+      value: loadingMaterials ? "..." : (() => {
+        try {
+          const month = new Date().getMonth();
+          const year = new Date().getFullYear();
+          const monthMaterials = materialRecords.filter(m => {
+            const d = new Date(m.date);
+            return d.getMonth() === month && d.getFullYear() === year;
+          });
+          const deliveries = monthMaterials.length;
+          const totalKg = monthMaterials
+            .filter(m => m.unit_type === 'KG')
+            .reduce((s, m) => s + (m.net_weight || 0), 0);
+          return `${deliveries} entregas • ${totalKg.toLocaleString('pt-BR')} kg`;
+        } catch (e) {
+          return "0";
+        }
+      })(),
+      change: "+0%"
+    }
   ];
 
   // Top produtores baseado em dados reais
@@ -300,8 +321,10 @@ const Reports = () => {
     const today = new Date().toLocaleDateString('pt-BR');
     const todayDate = new Date().toISOString().split('T')[0];
     
-    // Carregamentos concluídos do dia
-    const carregamentosConcluidos = loadingRecords.filter(l => l.exit_date === todayDate);
+    // Carregamentos concluídos do dia (usar `loaded_at` — data em que o usuário marcou como carregado)
+    const carregamentosConcluidos = loadingRecords.filter(l =>
+      l.status === 'carregado' && l.loaded_at && l.loaded_at.split('T')[0] === todayDate
+    );
     
     // Agrupar carregamentos concluídos por produto
     const plumaCarregamentos = carregamentosConcluidos.filter(l => l.product === 'Pluma');
@@ -457,8 +480,10 @@ const Reports = () => {
     const today = new Date().toLocaleDateString('pt-BR');
     const todayDate = new Date().toISOString().split('T')[0];
     
-    // Carregamentos concluídos do dia
-    const carregamentosConcluidos = loadingRecords.filter(l => l.exit_date === todayDate);
+    // Carregamentos concluídos do dia (usar `loaded_at` — data em que o usuário marcou como carregado)
+    const carregamentosConcluidos = loadingRecords.filter(l =>
+      l.status === 'carregado' && l.loaded_at && l.loaded_at.split('T')[0] === todayDate
+    );
     
     // Agrupar carregamentos concluídos por produto
     const plumaCarregamentos = carregamentosConcluidos.filter(l => l.product === 'Pluma');
@@ -476,9 +501,20 @@ const Reports = () => {
     const todayCotton = cottonRecords.filter(r => r.date === todayDate);
     const todayRolls = todayCotton.reduce((sum, r) => sum + r.rolls, 0);
     
-    // Materiais recebidos (assumindo que você tem os dados de materiais)
-    // Como não temos os dados reais ainda, vou deixar preparado
+    // Materiais recebidos no dia
     const todayMaterials = materialRecords.filter(m => m.date === todayDate);
+    const totalMaterialDeliveries = todayMaterials.length;
+    const totalMaterialKg = todayMaterials
+      .filter(m => m.unit_type === 'KG')
+      .reduce((s, m) => s + (m.net_weight || 0), 0);
+    const avgMaterialPerDelivery = totalMaterialDeliveries > 0 ? (totalMaterialKg / totalMaterialDeliveries) : 0;
+    const materialByType = todayMaterials.reduce((acc: Record<string, {count:number, kg:number}>, m) => {
+      const key = m.material_type || 'Outros';
+      if (!acc[key]) acc[key] = { count: 0, kg: 0 };
+      acc[key].count += 1;
+      if (m.unit_type === 'KG') acc[key].kg += (m.net_weight || 0);
+      return acc;
+    }, {});
     
     // Fila de carregamento atual (apenas na fila)
     const filaAtual = loadingRecords.filter(l => !l.entry_date);
@@ -516,8 +552,14 @@ const Reports = () => {
     }
 
     message += `\n\n📦 RECEBIMENTO DE MATERIAIS:`;
-    // Quando implementar materiais, adicionar aqui
-    message += `\n❌ Nenhum material recebido hoje`; // Temporário
+    if (totalMaterialDeliveries > 0) {
+      message += `\n✅ ${totalMaterialDeliveries} entrega(s) • ${totalMaterialKg.toLocaleString('pt-BR')} kg • média ${avgMaterialPerDelivery.toFixed(1)} kg/entrega`;
+      Object.entries(materialByType).forEach(([type, v]) => {
+        message += `\n• ${type}: ${v.count} entrega(s) • ${v.kg.toLocaleString('pt-BR')} kg`;
+      });
+    } else {
+      message += `\n❌ Nenhum material recebido hoje`;
+    }
 
     // Saída de equipamentos do dia
     const todayEquipment = equipmentRecords.filter(eq => eq.date === todayDate);

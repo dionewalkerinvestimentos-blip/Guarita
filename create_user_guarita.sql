@@ -13,12 +13,12 @@ INSERT INTO users (
   uuid_generate_v4(),
   'guarita',
   'guarita@iba.com',
-  crypt('123456', gen_salt('bf')), -- Hash seguro da senha 123456
+  crypt('Senha@2026', gen_salt('bf')), -- Hash seguro da senha fornecida
   'Guarita',
   'user',
   true
 ) ON CONFLICT (username) DO UPDATE SET
-  password_hash = crypt('123456', gen_salt('bf')),
+  password_hash = crypt('Senha@2026', gen_salt('bf')),
   full_name = 'Guarita',
   role = 'user',
   is_active = true;

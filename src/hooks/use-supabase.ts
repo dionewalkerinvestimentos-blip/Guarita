@@ -82,10 +82,15 @@ export const useVehicles = () => {
         .update(updates)
         .eq('id', id)
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) throw error
-      
+
+      if (!data) {
+        console.error('Update returned no rows for vehicle. Possible RLS/perms or invalid id:', id)
+        throw new Error('Nenhum veículo atualizado (verifique permissões ou id)')
+      }
+
       setVehicles(prev => prev.map(v => v.id === id ? data : v))
       return data
     } catch (error) {
@@ -101,13 +106,23 @@ export const useVehicles = () => {
 
   const deleteVehicle = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('vehicles')
         .delete()
         .eq('id', id)
+        .select()
+        .maybeSingle()
 
-      if (error) throw error
-      
+      if (error || !data) {
+        console.error('Erro ao excluir veículo (não removido):', error)
+        toast({
+          title: "Erro",
+          description: "Não foi possível excluir o veículo.",
+          variant: "destructive"
+        })
+        throw error || new Error('Registro não removido')
+      }
+
       setVehicles(prev => prev.filter(v => v.id !== id))
       toast({
         title: "Veículo excluído!",
@@ -221,13 +236,23 @@ export const useCottonPull = () => {
 
   const deleteRecord = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('cotton_pull')
         .delete()
         .eq('id', id)
+        .select()
+        .maybeSingle()
 
-      if (error) throw error
-      
+      if (error || !data) {
+        console.error('Erro ao excluir registro de algodão (não removido):', error)
+        toast({
+          title: "Erro",
+          description: "Não foi possível excluir o registro.",
+          variant: "destructive"
+        })
+        throw error || new Error('Registro não removido')
+      }
+
       setRecords(prev => prev.filter(r => r.id !== id))
       toast({
         title: "Registro excluído!",
@@ -250,10 +275,15 @@ export const useCottonPull = () => {
         .update(updates)
         .eq('id', id)
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) throw error
-      
+
+      if (!data) {
+        console.error('Update returned no rows for cotton_pull. Possible RLS/perms or invalid id:', id)
+        throw new Error('Nenhum registro atualizado (verifique permissões ou id)')
+      }
+
       setRecords(prev => prev.map(r => r.id === id ? data : r))
       toast({
         title: "Registro atualizado!",
@@ -349,10 +379,15 @@ export const useRainRecords = () => {
         .update(updates)
         .eq('id', id)
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) throw error
-      
+
+      if (!data) {
+        console.error('Update returned no rows for rain_records. Possible RLS/perms or invalid id:', id)
+        throw new Error('Nenhum registro atualizado (verifique permissões ou id)')
+      }
+
       setRecords(prev => prev.map(r => r.id === id ? data : r))
       toast({
         title: "Registro atualizado!",
@@ -373,13 +408,23 @@ export const useRainRecords = () => {
 
   const deleteRecord = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('rain_records')
         .delete()
         .eq('id', id)
+        .select()
+        .single()
 
-      if (error) throw error
-      
+      if (error || !data) {
+        console.error('Erro ao excluir registro de chuva (não removido):', error)
+        toast({
+          title: "Erro",
+          description: "Não foi possível excluir o registro de chuva.",
+          variant: "destructive"
+        })
+        throw error || new Error('Registro não removido')
+      }
+
       setRecords(prev => prev.filter(r => r.id !== id))
       toast({
         title: "Registro excluído!",
@@ -474,10 +519,15 @@ export const useEquipment = () => {
         .update(updates)
         .eq('id', id)
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) throw error
-      
+
+      if (!data) {
+        console.error('Update returned no rows for equipment. Possible RLS/perms or invalid id:', id)
+        throw new Error('Nenhum equipamento atualizado (verifique permissões ou id)')
+      }
+
       setRecords(prev => prev.map(r => r.id === id ? data : r))
       return data
     } catch (error) {
@@ -493,13 +543,23 @@ export const useEquipment = () => {
 
   const deleteRecord = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('equipment')
         .delete()
         .eq('id', id)
+        .select()
+        .maybeSingle()
 
-      if (error) throw error
-      
+      if (error || !data) {
+        console.error('Erro ao excluir equipamento (não removido):', error)
+        toast({
+          title: "Erro",
+          description: "Não foi possível excluir o equipamento.",
+          variant: "destructive"
+        })
+        throw error || new Error('Registro não removido')
+      }
+
       setRecords(prev => prev.filter(r => r.id !== id))
       toast({
         title: "Equipamento excluído!",
@@ -674,7 +734,7 @@ export const useLoadingRecords = () => {
         .update(cleanUpdates)
         .eq('id', id)
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) {
         console.error('=== ERRO SUPABASE ===')
@@ -683,6 +743,11 @@ export const useLoadingRecords = () => {
         console.error('Detalhes:', error.details)
         console.error('Hint:', error.hint)
         throw error
+      }
+
+      if (!data) {
+        console.error('Update returned no rows. Possible RLS/perms or invalid id:', id)
+        throw new Error('Nenhum registro atualizado (verifique permissões ou id)')
       }
       
       setRecords(prev => prev.map(r => r.id === id ? data : r))
@@ -705,13 +770,23 @@ export const useLoadingRecords = () => {
 
   const deleteRecord = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('loading_records')
         .delete()
         .eq('id', id)
+        .select()
+        .single()
 
-      if (error) throw error
-      
+      if (error || !data) {
+        console.error('Erro ao excluir carregamento (não removido):', error)
+        toast({
+          title: "Erro",
+          description: "Não foi possível excluir o carregamento.",
+          variant: "destructive"
+        })
+        throw error || new Error('Registro não removido')
+      }
+
       setRecords(prev => prev.filter(r => r.id !== id))
       toast({
         title: "Carregamento excluído!",
@@ -760,11 +835,25 @@ export const usePuxeViagens = () => {
       setViagens(data || [])
     } catch (error) {
       console.error('Erro ao buscar viagens:', error)
-      toast({
-        title: "Erro",
-        description: "Não foi possível carregar as viagens.",
-        variant: "destructive"
-      })
+      // Se a tabela/rota ainda não existir no Supabase (404), não mostrar toast.
+      const err: any = error
+      const isNotFound = err && (
+        err.status === 404 ||
+        err.statusCode === 404 ||
+        err.code === '404' ||
+        (typeof err.message === 'string' && err.message.includes('404'))
+      )
+
+      if (isNotFound) {
+        console.warn('puxe_viagens não encontrado — ignorando (sem viagens lançadas ainda)')
+        setViagens([])
+      } else {
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar as viagens.",
+          variant: "destructive"
+        })
+      }
     } finally {
       setLoading(false)
     }
@@ -805,10 +894,15 @@ export const usePuxeViagens = () => {
         .update(updates)
         .eq('id', id)
         .select()
-        .single()
+        .maybeSingle()
 
       if (error) throw error
-      
+
+      if (!data) {
+        console.error('Update returned no rows for puxe_viagens. Possible RLS/perms or invalid id:', id)
+        throw new Error('Nenhuma viagem atualizada (verifique permissões ou id)')
+      }
+
       setViagens(prev => prev.map(v => v.id === id ? data : v))
       toast({
         title: "Viagem atualizada!",
@@ -829,13 +923,23 @@ export const usePuxeViagens = () => {
 
   const deleteViagem = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('puxe_viagens')
         .delete()
         .eq('id', id)
+        .select()
+        .maybeSingle()
 
-      if (error) throw error
-      
+      if (error || !data) {
+        console.error('Erro ao excluir viagem (não removido):', error)
+        toast({
+          title: "Erro",
+          description: "Não foi possível excluir a viagem.",
+          variant: "destructive"
+        })
+        throw error || new Error('Registro não removido')
+      }
+
       setViagens(prev => prev.filter(v => v.id !== id))
       toast({
         title: "Viagem excluída!",

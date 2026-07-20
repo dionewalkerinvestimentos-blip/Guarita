@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
 // TESTE DE CONEXÃO - Substitua pelas suas credenciais reais do Supabase
-const supabaseUrl = 'https://wjnsbrkspgzioafvqfhe.supabase.co'
+const supabaseUrl = 'https://vwtlgddtqxhdusuejtaa.supabase.co'
 
 // Cole aqui a chave anon correta do seu painel Supabase
 const supabaseAnonKey = 'COLE_AQUI_SUA_CHAVE_ANON_CORRETA'

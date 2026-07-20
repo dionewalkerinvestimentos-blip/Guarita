@@ -28,7 +28,7 @@
   };
 
   // Configuração do cliente Supabase (usando as variáveis de ambiente do seu projeto)
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://wjnsbrkspgzioafvqfhe.supabase.co';
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://vwtlgddtqxhdusuejtaa.supabase.co';
   const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqbnNicmtzcGd6aW9hZnZxZmhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA3NDE0MjMsImV4cCI6MjA0NjMxNzQyM30.Cw8bs3aTBe6Qmr-0flDIR-dnx89C1LC0rJR_YCjIKP0';
   const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.45.0');
   const supabase = createClient(supabaseUrl, supabaseKey);
