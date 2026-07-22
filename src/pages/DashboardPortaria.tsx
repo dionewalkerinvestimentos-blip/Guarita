@@ -411,13 +411,23 @@ function DashboardPortariaTV() {
   // Ranking de placas - Rolos do dia
   const rankingDia = todayRolls.reduce((acc, r) => {
     if (!acc[r.plate]) {
-      acc[r.plate] = { plate: r.plate, driver: r.driver, rolos: 0, viagens: 0 };
+      acc[r.plate] = { 
+        plate: r.plate, 
+        driver: r.driver, 
+        rolos: 0, 
+        viagens: 0,
+        tempo_algodoeira: 0,
+        tempo_lavoura: 0
+      };
     }
     acc[r.plate].rolos += r.rolls;
     acc[r.plate].viagens += 1;
-    acc[r.plate].driver = r.driver; // Sempre usar o motorista mais recente
+    acc[r.plate].driver = r.driver;
+    // Acumular tempos de viagem (se tiver dados de puxe_viagens)
+    if (r.tempo_algodoeira) acc[r.plate].tempo_algodoeira += r.tempo_algodoeira;
+    if (r.tempo_lavoura) acc[r.plate].tempo_lavoura += r.tempo_lavoura;
     return acc;
-  }, {} as Record<string, {plate: string, driver: string, rolos: number, viagens: number}>);
+  }, {} as Record<string, {plate: string, driver: string, rolos: number, viagens: number, tempo_algodoeira: number, tempo_lavoura: number}>);
 
   const rankingDiaArray = Object.values(rankingDia)
     .sort((a, b) => b.rolos - a.rolos)
@@ -513,13 +523,23 @@ function DashboardPortariaTV() {
   
   const rankingMes = monthRolls.reduce((acc, r) => {
     if (!acc[r.plate]) {
-      acc[r.plate] = { plate: r.plate, driver: r.driver, rolos: 0, viagens: 0 };
+      acc[r.plate] = { 
+        plate: r.plate, 
+        driver: r.driver, 
+        rolos: 0, 
+        viagens: 0,
+        tempo_algodoeira: 0,
+        tempo_lavoura: 0
+      };
     }
     acc[r.plate].rolos += r.rolls;
     acc[r.plate].viagens += 1;
-    acc[r.plate].driver = r.driver; // Sempre usar o motorista mais recente
+    acc[r.plate].driver = r.driver;
+    // Acumular tempos de viagem
+    if (r.tempo_algodoeira) acc[r.plate].tempo_algodoeira += r.tempo_algodoeira;
+    if (r.tempo_lavoura) acc[r.plate].tempo_lavoura += r.tempo_lavoura;
     return acc;
-  }, {} as Record<string, {plate: string, driver: string, rolos: number, viagens: number}>);
+  }, {} as Record<string, {plate: string, driver: string, rolos: number, viagens: number, tempo_algodoeira: number, tempo_lavoura: number}>);
 
   const rankingMesArray = Object.values(rankingMes)
     .sort((a, b) => b.rolos - a.rolos)
@@ -1054,6 +1074,14 @@ function DashboardPortariaTV() {
                               <p className={`text-[clamp(0.45rem,0.65vw,0.7rem)] ${isInAlgodoeira && !hasParadaPuxe ? 'text-yellow-200' : 'text-emerald-300'}`}>
                                 {item.driver}
                               </p>
+                              {/* Tempos de viagem */}
+                              {(item.tempo_algodoeira > 0 || item.tempo_lavoura > 0) && (
+                                <p className={`text-[clamp(0.4rem,0.6vw,0.65rem)] mt-[clamp(0.1rem,0.15vh,0.15rem)] ${
+                                  isInAlgodoeira && !hasParadaPuxe ? 'text-yellow-100' : 'text-emerald-200'
+                                }`}>
+                                  🏭 {Math.round(item.tempo_algodoeira)}min | 🌾 {Math.round(item.tempo_lavoura)}min
+                                </p>
+                              )}
                               {/* Status Parada Puxe */}
                               {hasParadaPuxe && (
                                 <div className="mt-[clamp(0.1rem,0.2vh,0.2rem)]">
@@ -1113,6 +1141,12 @@ function DashboardPortariaTV() {
                           <div className="min-w-0 flex-1">
                             <p className="font-semibold text-emerald-400 text-[clamp(0.5rem,0.75vw,0.8rem)]">{item.plate}</p>
                             <p className="text-[clamp(0.45rem,0.65vw,0.7rem)] text-emerald-300">{item.driver}</p>
+                            {/* Tempos de viagem */}
+                            {(item.tempo_algodoeira > 0 || item.tempo_lavoura > 0) && (
+                              <p className="text-[clamp(0.4rem,0.6vw,0.65rem)] text-emerald-200">
+                                🏭 {Math.round(item.tempo_algodoeira)}min | 🌾 {Math.round(item.tempo_lavoura)}min
+                              </p>
+                            )}
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0 ml-1">
