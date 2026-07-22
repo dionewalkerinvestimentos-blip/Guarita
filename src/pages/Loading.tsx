@@ -21,9 +21,9 @@ const Loading = () => {
   const { toast } = useToast();
   const { records: loadings, addRecord, updateRecord, deleteRecord, loading } = useLoadingRecords();
   const { vehicles } = useVehicles();
-  
+
   const today = getTodayLocalDate();
-  
+
   const [truckTypes, setTruckTypes] = useState<string[]>(() => {
     const saved = localStorage.getItem('guarita_truck_types');
     return saved ? JSON.parse(saved) : ["Rodotrem", "Bitrem", "Toco", "LS Simples", "LS Trucada", "Vanderleia"];
@@ -36,8 +36,8 @@ const Loading = () => {
     const saved = localStorage.getItem('guarita_destinations');
     return saved ? JSON.parse(saved) : ["Santos-SP", "Guararapes-SP", "Cubatão-SP", "Guarujá-SP", "Paranaguá-PR", "Tangará da Serra-MT", "Alto Araguaia-MT"];
   });
-  const [harvestYears] = useState<string[]>(["2024/2025", "2023/2024", "2022/2023", "2021/2022"]);
-  
+  const [harvestYears] = useState<string[]>(["2025/2026""2024/2025", "2023/2024", "2022/2023", "2021/2022"]);
+
   const [selectedLoading, setSelectedLoading] = useState<LoadingRecord | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -124,11 +124,11 @@ const Loading = () => {
       exit_date: formData.get("exit_date") as string || null,
       exit_time: formData.get("exit_time") as string || null
     };
-    
+
     // Salvar dados para autocomplete
     const plate = formData.get("plate") as string;
     const driver = formData.get("driver") as string;
-    
+
     if (plate && !savedPlates.includes(plate.toUpperCase())) {
       const newPlates = [...savedPlates, plate.toUpperCase()];
       setSavedPlates(newPlates);
@@ -139,22 +139,22 @@ const Loading = () => {
       setSavedDrivers(newDrivers);
       localStorage.setItem('guarita_saved_drivers', JSON.stringify(newDrivers));
     }
-    
+
     try {
       if (isEditMode && selectedLoading) {
         // Determinar o status baseado nos dados
         let newStatus = selectedLoading.status; // Mantém o status atual por padrão
-        
+
         // Se tem entry_date mas status ainda é 'fila', muda para 'carregando'
         if (loadingData.entry_date && selectedLoading.status === 'fila') {
           newStatus = 'carregando';
         }
-        
+
         // Se tem exit_date, muda para 'concluido'
         if (loadingData.exit_date) {
           newStatus = 'concluido';
         }
-        
+
         await updateRecord(selectedLoading.id, { ...loadingData, status: newStatus });
         setIsDialogOpen(false);
         setIsEditMode(false);
@@ -168,8 +168,8 @@ const Loading = () => {
     }
   };
 
-  const handleCardClick = (loading: LoadingRecord) => { 
-    setSelectedLoading(loading); 
+  const handleCardClick = (loading: LoadingRecord) => {
+    setSelectedLoading(loading);
     setIsEditMode(false);
     // Determine modal action based on entry_date
     if (!loading.entry_date) { // This is the key condition
@@ -177,7 +177,7 @@ const Loading = () => {
     } else {
       setModalAction('escolher'); // Otherwise, it's already loading, so choose loaded/exit
     }
-    setIsDialogOpen(true); 
+    setIsDialogOpen(true);
   };
 
   const handleEditClick = (loading: LoadingRecord, e: React.MouseEvent) => {
@@ -203,7 +203,7 @@ const Loading = () => {
     const sameProductQueue = queuedLoadings
       .filter(l => l.product === loading.product)
       .sort((a, b) => new Date(a.created_at!).getTime() - new Date(b.created_at!).getTime());
-    
+
     const position = sameProductQueue.findIndex(l => l.id === loading.id) + 1;
     return { position, total: sameProductQueue.length };
   };
@@ -225,12 +225,12 @@ const Loading = () => {
     const entryTime = (document.getElementById("entryTime") as HTMLInputElement)?.value;
     const destination = (document.getElementById("confirmDestination") as HTMLInputElement)?.value;
     const client = (document.getElementById("confirmClient") as HTMLInputElement)?.value;
-    
+
     if (!entryDate || !entryTime) {
       toast({ title: "Campos obrigatórios", description: "Preencha data e hora de entrada.", variant: "destructive" });
       return;
     }
-    
+
     try {
       await updateRecord(selectedLoading.id, {
         entry_date: entryDate,
@@ -254,17 +254,17 @@ const Loading = () => {
     const client = (document.getElementById("confirmClientExit") as HTMLInputElement)?.value;
     const bales = Number((document.getElementById("bales") as HTMLInputElement)?.value || 0);
     const weight = Number((document.getElementById("weight") as HTMLInputElement)?.value || 0);
-    
+
     // Para concluir COMPLETAMENTE (e remover da lista), precisa de hora de saída
     if (!exitDate || !exitTime) {
-      toast({ 
-        title: "Hora de saída obrigatória", 
-        description: "Para remover da lista, informe a hora de saída do caminhão.", 
-        variant: "destructive" 
+      toast({
+        title: "Hora de saída obrigatória",
+        description: "Para remover da lista, informe a hora de saída do caminhão.",
+        variant: "destructive"
       });
       return;
     }
-    
+
     try {
       // Atualiza com os dados disponíveis + hora de saída = status concluido
       await updateRecord(selectedLoading.id, {
@@ -295,11 +295,11 @@ const Loading = () => {
   // Nova função para marcar como carregado sem hora de saída
   const handleMarkAsLoaded = async () => {
     if (!selectedLoading) return;
-    
+
     // Pega apenas Fardos ou Peso (os campos que estão no modal CARREGADO)
     const bales = Number((document.getElementById("balesCarregado") as HTMLInputElement)?.value || 0);
     const weight = Number((document.getElementById("weightCarregado") as HTMLInputElement)?.value || 0);
-    
+
     try {
       await updateRecord(selectedLoading.id, {
         status: 'carregado', // Marca como carregado mas não concluído
@@ -353,28 +353,28 @@ const Loading = () => {
     }
   };
 
-  const queuedLoadings = loadings.filter(l => 
+  const queuedLoadings = loadings.filter(l =>
     l.status === 'fila' && !l.entry_date // CORREÇÃO APLICADA AQUI
   );
-  
+
   const loadingInProgress = loadings.filter(l => {
     const todayDateString = getTodayLocalDate();
-    
+
     // Não mostra se já tem saída
     if (l.exit_date) return false;
-    
+
     // Mostra os que estão carregando
     if (l.status === 'carregando') return true;
-    
+
     // Mostra os carregados de HOJE que ainda não registraram saída
     if (l.status === 'carregado' && l.loaded_at && !l.exit_date) {
       const loadedAtNormalized = l.loaded_at.split('T')[0].split(' ')[0].trim();
       return loadedAtNormalized === todayDateString;
     }
-    
+
     return false;
   });
-  
+
   const completedLoadings = loadings.filter(l => {
     const todayDateString = getTodayLocalDate();
 
@@ -396,7 +396,7 @@ const Loading = () => {
 
     return false;
   });
-  
+
   // Debug: Log para verificar dados
   console.log('=== DEBUG CONCLUÍDOS (Loading.tsx) ===');
   console.log('Today (local):', today);
@@ -404,10 +404,10 @@ const Loading = () => {
   console.log('Concluídos filtrados:', completedLoadings.length);
   console.log('Registros com status=concluido e exit_date=today:', loadings.filter(l => l.status === 'concluido' && l.exit_date && convertIsoToLocalDateString(l.exit_date) === today).length);
   console.log('Registros com status=carregado e loaded_at=today:', loadings.filter(l => l.status === 'carregado' && l.loaded_at && convertIsoToLocalDateString(l.loaded_at) === today).length);
-  console.log('Sample records:', loadings.slice(0, 3).map(r => ({ 
-    plate: r.plate, 
-    entry_date: r.entry_date, 
-    exit_date: r.exit_date, 
+  console.log('Sample records:', loadings.slice(0, 3).map(r => ({
+    plate: r.plate,
+    entry_date: r.entry_date,
+    exit_date: r.exit_date,
     status: r.status,
     loaded_at: r.loaded_at
   })));
@@ -486,16 +486,16 @@ const Loading = () => {
                     </div>
                   ) : (
                     <div className="flex gap-2">
-                      <Input 
+                      <Input
                         name="product"
                         value={newProduct}
                         onChange={(e) => setNewProduct(e.target.value)}
                         placeholder="Digite o nome do novo produto"
                         required
                       />
-                      <Button 
-                        type="button" 
-                        variant="outline" 
+                      <Button
+                        type="button"
+                        variant="outline"
                         onClick={() => {
                           setIsCreatingNewProduct(false);
                           setNewProduct("");
@@ -509,7 +509,7 @@ const Loading = () => {
               </div>
               <div className="grid sm:grid-cols-1 gap-4">
                 <div className="space-y-2"><Label>Safra</Label>
-                  <Select name="harvestYear" required defaultValue="2024/2025"><SelectTrigger><SelectValue /></SelectTrigger>
+                  <Select name="harvestYear" required defaultValue="2025/2026">
                     <SelectContent>{harvestYears.map(year => <SelectItem key={year} value={year}>{year}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
@@ -563,9 +563,9 @@ const Loading = () => {
                 </div>
                 <div className="space-y-2">
                   <Label>Placa</Label>
-                  <Input 
-                    name="plate" 
-                    required 
+                  <Input
+                    name="plate"
+                    required
                     list="plates-list"
                     style={{ textTransform: 'uppercase' }}
                   />
@@ -576,9 +576,9 @@ const Loading = () => {
               </div>
               <div className="space-y-2">
                 <Label>Motorista</Label>
-                <Input 
-                  name="driver" 
-                  required 
+                <Input
+                  name="driver"
+                  required
                   list="drivers-list"
                 />
                 <datalist id="drivers-list">
@@ -804,7 +804,7 @@ const Loading = () => {
                           // Prioriza os que já saíram (concluido) sobre os que aguardam NF (carregado)
                           if (a.status === 'carregado' && b.status === 'concluido') return 1;
                           if (a.status === 'concluido' && b.status === 'carregado') return -1;
-                          
+
                           // Depois, ordena pelo loaded_at ou exit_date mais recente
                           const timeA = new Date(a.exit_date || a.loaded_at!).getTime();
                           const timeB = new Date(b.exit_date || b.loaded_at!).getTime();
@@ -818,7 +818,7 @@ const Loading = () => {
                             loading.exit_date,
                             loading.exit_time
                           );
-                          
+
                           return (
                             <tr key={loading.id} className="border-b hover:bg-green-50 transition-colors">
                               <td className="p-2 font-medium border border-gray-200">{loading.plate}</td>
@@ -837,8 +837,8 @@ const Loading = () => {
                                 </span>
                               </td>
                               <td className="p-2 border border-gray-200">
-                                {loading.entry_date && loading.entry_time 
-                                  ? `${loading.entry_date} ${loading.entry_time}` 
+                                {loading.entry_date && loading.entry_time
+                                  ? `${loading.entry_date} ${loading.entry_time}`
                                   : '-'}
                               </td>
                               <td className="p-2 border border-gray-200">
@@ -895,7 +895,7 @@ const Loading = () => {
                   className="mt-2"
                 />
               </div>
-              
+
               {/* Filtros Específicos */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg">
                 <div className="space-y-2">
@@ -919,7 +919,7 @@ const Loading = () => {
                     placeholder="Data final"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="filterProduct">Produto</Label>
                   <select
@@ -938,7 +938,7 @@ const Loading = () => {
                   <option value="Outros">Outros</option>
                 </select>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="filterCarrier">Transportadora</Label>
                 <select
@@ -953,7 +953,7 @@ const Loading = () => {
                   ))}
                 </select>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="filterStatus">Status</Label>
                 <select
@@ -969,7 +969,7 @@ const Loading = () => {
                   <option value="Concluído">Concluído</option>
                 </select>
               </div>
-              
+
               <div className="flex items-end">
                 <Button
                   variant="outline"
@@ -1027,11 +1027,11 @@ const Loading = () => {
                         } else if (loading.status === 'fila') {
                           status = 'Na Fila';
                         }
-                        
+
                         // Busca Geral (procura em TODAS as colunas)
                         if (filterSearch) {
                           const searchLower = filterSearch.toLowerCase();
-                          const matchSearch = 
+                          const matchSearch =
                             loading.plate?.toLowerCase().includes(searchLower) ||
                             loading.driver?.toLowerCase().includes(searchLower) ||
                             loading.product?.toLowerCase().includes(searchLower) ||
@@ -1048,10 +1048,10 @@ const Loading = () => {
                             loading.time?.includes(searchLower) ||
                             loading.entry_time?.includes(searchLower) ||
                             loading.exit_time?.includes(searchLower);
-                          
+
                           if (!matchSearch) return false;
                         }
-                        
+
                         // Aplicar filtros específicos
                         // Date matching: support single-date filter (legacy) OR start/end range
                         let matchDate = false;
@@ -1079,7 +1079,7 @@ const Loading = () => {
                         const matchProduct = filterProduct === "Todos" || loading.product === filterProduct;
                         const matchCarrier = filterCarrier === "Todos" || loading.carrier === filterCarrier;
                         const matchStatus = filterStatus === "Todos" || status === filterStatus;
-                        
+
                         return matchDate && matchProduct && matchCarrier && matchStatus;
                       })
                       .sort((a, b) => new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime())
@@ -1087,7 +1087,7 @@ const Loading = () => {
                         // Usar o campo status da tabela
                         let status = 'Na Fila';
                         let statusColor = 'text-yellow-600';
-                        
+
                         if (loading.exit_date) {
                           status = 'Concluído';
                           statusColor = 'text-green-600';
@@ -1103,7 +1103,7 @@ const Loading = () => {
                           status = 'Na Fila';
                           statusColor = 'text-yellow-600';
                         }
-                        
+
                         return (
                           <tr key={loading.id} className="hover:bg-muted/30 transition-colors">
                             <td className="p-2 border">
@@ -1232,7 +1232,7 @@ const Loading = () => {
                   </div>
                 )}
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Produto</Label>
                 <Select name="product" defaultValue={selectedLoading.product} required>
@@ -1252,7 +1252,7 @@ const Loading = () => {
 
               <div className="space-y-2">
                 <Label>Safra</Label>
-                <Select name="harvestYear" defaultValue={selectedLoading.harvest_year || "2024/2025"} required>
+                <Select name="harvestYear" defaultValue={selectedLoading.harvest_year || "2025/2026"} required>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -1311,9 +1311,9 @@ const Loading = () => {
               </div>
 
               <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="editIsSider" 
-                  name="isSider" 
+                <Checkbox
+                  id="editIsSider"
+                  name="isSider"
                   defaultChecked={selectedLoading.is_sider}
                 />
                 <label htmlFor="editIsSider" className="text-sm font-medium">
@@ -1326,8 +1326,8 @@ const Loading = () => {
                   Salvar Alterações
                 </Button>
                 {selectedLoading.exit_date && (
-                  <Button 
-                    type="button" 
+                  <Button
+                    type="button"
                     variant="destructive"
                     onClick={async (e) => {
                       e.preventDefault();
@@ -1339,18 +1339,18 @@ const Loading = () => {
                             status: 'carregado',
                             loaded_at: new Date().toISOString(), // ATUALIZA o timestamp de carregamento
                           });
-                          
+
                           // Fecha modal imediatamente
                           setIsDialogOpen(false);
                           setIsEditMode(false);
                           setSelectedLoading(null);
-                          
+
                           toast({
                             title: "✅ Voltado para CARREGADO",
                             description: `${selectedLoading.plate} está novamente na seção "Carregando" aguardando saída.`,
                             duration: 5000
                           });
-                          
+
                           // Força reload da página para atualizar os cards
                           window.location.reload();
                         } catch (error) {
@@ -1367,9 +1367,9 @@ const Loading = () => {
                     🔄 Voltar para CARREGADO
                   </Button>
                 )}
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => {setIsDialogOpen(false); setIsEditMode(false);}}
                 >
                   Cancelar
@@ -1389,26 +1389,26 @@ const Loading = () => {
               </div>
               <div className="space-y-2 border-t pt-4">
                 <Label>Confirmar Destino</Label>
-                <Input 
-                  type="text" 
-                  id="confirmDestination" 
+                <Input
+                  type="text"
+                  id="confirmDestination"
                   placeholder="Digite ou confirme o destino"
-                  defaultValue={selectedLoading.destination || ""} 
+                  defaultValue={selectedLoading.destination || ""}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Cliente (opcional)</Label>
-                <Input 
-                  type="text" 
-                  id="confirmClient" 
+                <Input
+                  type="text"
+                  id="confirmClient"
                   placeholder="Digite o nome do cliente"
-                  defaultValue={selectedLoading.client || ""} 
+                  defaultValue={selectedLoading.client || ""}
                 />
               </div>
               <DialogFooter className="gap-2">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => setIsDialogOpen(false)}
                 >
                   Cancelar
@@ -1426,18 +1426,18 @@ const Loading = () => {
                   O caminhão já está carregado ou ainda está aguardando a nota fiscal?
                 </p>
               </div>
-              
-              <Button 
-                onClick={() => setModalAction('carregado')} 
+
+              <Button
+                onClick={() => setModalAction('carregado')}
                 className="w-full h-auto py-6 flex flex-col items-center gap-2 bg-orange-500 hover:bg-orange-600"
               >
                 <Package className="w-8 h-8" />
                 <span className="font-bold">CARREGADO</span>
                 <span className="text-xs font-normal">Aguardando NF</span>
               </Button>
-              
-              <Button 
-                onClick={() => setModalAction('saiu')} 
+
+              <Button
+                onClick={() => setModalAction('saiu')}
                 className="w-full h-auto py-6 flex flex-col items-center gap-2 bg-green-600 hover:bg-green-700"
               >
                 <CheckCircle className="w-8 h-8" />
@@ -1457,19 +1457,19 @@ const Loading = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">📦 Carregado - Aguardando NF</h3>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setModalAction('escolher')}
                 >
                   ← Voltar
                 </Button>
               </div>
-              
+
               <p className="text-sm text-muted-foreground mb-4">
                 Informe apenas a quantidade para marcar como carregado:
               </p>
-              
+
               {selectedLoading.product === "Pluma" && (
                 <div className="space-y-2">
                   <Label htmlFor="balesCarregado">Fardos</Label>
@@ -1482,9 +1482,9 @@ const Loading = () => {
                   <Input type="number" id="weightCarregado" placeholder="Peso em quilogramas" defaultValue={selectedLoading.weight || ""} />
                 </div>
               )}
-              
-              <Button 
-                onClick={handleMarkAsLoaded} 
+
+              <Button
+                onClick={handleMarkAsLoaded}
                 className="w-full bg-orange-500 hover:bg-orange-600"
               >
                 ✅ Confirmar - Carregado (fica visível na lista)
@@ -1498,31 +1498,31 @@ const Loading = () => {
             <form onSubmit={handleCompleteLoading} className="space-y-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">✅ Finalizar e Remover</h3>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setModalAction('escolher')}
                 >
                   ← Voltar
                 </Button>
               </div>
-              
+
               <div className="space-y-2 border-b pb-4">
                 <Label htmlFor="confirmDestinationExit">Destino</Label>
-                <Input 
-                  type="text" 
-                  id="confirmDestinationExit" 
+                <Input
+                  type="text"
+                  id="confirmDestinationExit"
                   placeholder="Digite ou confirme o destino"
-                  defaultValue={selectedLoading.destination || ""} 
+                  defaultValue={selectedLoading.destination || ""}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirmClientExit">Cliente (opcional)</Label>
-                <Input 
-                  type="text" 
-                  id="confirmClientExit" 
+                <Input
+                  type="text"
+                  id="confirmClientExit"
                   placeholder="Digite o nome do cliente"
-                  defaultValue={selectedLoading.client || ""} 
+                  defaultValue={selectedLoading.client || ""}
                 />
               </div>
               <div className="space-y-2">
@@ -1549,11 +1549,11 @@ const Loading = () => {
                   <Input type="number" id="weight" placeholder="Peso em quilogramas" defaultValue={selectedLoading.weight || ""} />
                 </div>
               )}
-              
+
               <DialogFooter className="gap-2">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => setModalAction('escolher')}
                 >
                   Voltar
