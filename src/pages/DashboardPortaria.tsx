@@ -1118,12 +1118,6 @@ function DashboardPortariaTV() {
                               <p className={`text-[clamp(0.45rem,0.65vw,0.7rem)] ${isInAlgodoeira && !hasParadaPuxe ? 'text-yellow-200' : 'text-emerald-300'}`}>
                                 {item.driver}
                               </p>
-                              {/* Média de tempos do dia */}
-                              <p className={`text-[clamp(0.4rem,0.6vw,0.65rem)] mt-[clamp(0.1rem,0.15vh,0.15rem)] ${
-                                isInAlgodoeira && !hasParadaPuxe ? 'text-yellow-100' : 'text-emerald-200'
-                              }`}>
-                                🏭 {formatTimeMinutes(avgAlgodoeiraFromCargas)} | 🌾 {formatTimeMinutes(avgLavouraFromCargas)}
-                              </p>
                               {/* Status Parada Puxe */}
                               {hasParadaPuxe && (
                                 <div className="mt-[clamp(0.1rem,0.2vh,0.2rem)]">
@@ -1183,10 +1177,6 @@ function DashboardPortariaTV() {
                           <div className="min-w-0 flex-1">
                             <p className="font-semibold text-emerald-400 text-[clamp(0.5rem,0.75vw,0.8rem)]">{item.plate}</p>
                             <p className="text-[clamp(0.45rem,0.65vw,0.7rem)] text-emerald-300">{item.driver}</p>
-                            {/* Média de tempos */}
-                            <p className="text-[clamp(0.4rem,0.6vw,0.65rem)] text-emerald-200">
-                              🏭 {formatTimeMinutes(avgAlgodoeiraFromCargas)} | 🌾 {formatTimeMinutes(avgLavouraFromCargas)}
-                            </p>
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0 ml-1">
@@ -1230,14 +1220,14 @@ function DashboardPortariaTV() {
                       <div className="text-right">
                         <p className="text-[clamp(0.65rem,1vw,0.9rem)] text-muted-foreground font-medium">Algodoeira</p>
                         <p className="text-[clamp(0.85rem,1.4vw,1.3rem)] font-bold text-green-500">
-                          {loadingGestaoTempo ? "..." : (avgAlgodoeiraFromCargas !== null ? formatTime(avgAlgodoeiraFromCargas) : (gestaoTempo?.tempo_algodoeira ? formatTime(gestaoTempo.tempo_algodoeira) : '-'))}
+                          {loadingGestaoTempo ? "..." : (avgAlgodoeiraFromCargas !== null ? formatTimeMinutes(avgAlgodoeiraFromCargas) : (gestaoTempo?.tempo_algodoeira ? formatTimeMinutes(gestaoTempo.tempo_algodoeira) : '-'))}
                         </p>
                       </div>
                       <div className="h-[clamp(2rem,3vh,3rem)] w-px bg-emerald-600/30"></div>
                       <div className="text-right">
                         <p className="text-[clamp(0.65rem,1vw,0.9rem)] text-muted-foreground font-medium">Lavoura</p>
                         <p className="text-[clamp(0.85rem,1.4vw,1.3rem)] font-bold text-green-500">
-                          {loadingGestaoTempo ? "..." : (avgLavouraFromCargas !== null ? formatTime(avgLavouraFromCargas) : (gestaoTempo?.tempo_lavoura ? formatTime(gestaoTempo.tempo_lavoura) : '-'))}
+                          {loadingGestaoTempo ? "..." : (avgLavouraFromCargas !== null ? formatTimeMinutes(avgLavouraFromCargas) : (gestaoTempo?.tempo_lavoura ? formatTimeMinutes(gestaoTempo.tempo_lavoura) : '-'))}
                         </p>
                       </div>
                     </div>
