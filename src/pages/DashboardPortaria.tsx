@@ -14,6 +14,16 @@ import { useAeration } from '@/hooks/use-aeration'
 import { supabase } from '@/lib/supabase'
 import type { ProductBalance } from '@/lib/supabase'
 
+// Função para formatar tempo em minutos para "XH YYmin"
+function formatTimeMinutes(minutes: number): string {
+  if (!minutes || minutes < 0) return '0min';
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hours === 0) return `${mins}min`;
+  if (mins === 0) return `${hours}H`;
+  return `${hours}H ${mins}min`;
+}
+
 function DashboardPortariaTV() {
   const { vehicles, loading: loadingVehicles, refetch: refetchVehicles } = useVehicles();
   const { records: cottonPullRecords, loading: loadingCotton, refetch: refetchCotton } = useCottonPull();
@@ -1074,12 +1084,12 @@ function DashboardPortariaTV() {
                               <p className={`text-[clamp(0.45rem,0.65vw,0.7rem)] ${isInAlgodoeira && !hasParadaPuxe ? 'text-yellow-200' : 'text-emerald-300'}`}>
                                 {item.driver}
                               </p>
-                              {/* Tempos de viagem */}
-                              {(item.tempo_algodoeira > 0 || item.tempo_lavoura > 0) && (
+                              {/* Média de tempos do dia */}
+                              {(avgAlgodoeiraFromCargas !== null || avgLavouraFromCargas !== null) && (
                                 <p className={`text-[clamp(0.4rem,0.6vw,0.65rem)] mt-[clamp(0.1rem,0.15vh,0.15rem)] ${
                                   isInAlgodoeira && !hasParadaPuxe ? 'text-yellow-100' : 'text-emerald-200'
                                 }`}>
-                                  🏭 {Math.round(item.tempo_algodoeira)}min | 🌾 {Math.round(item.tempo_lavoura)}min
+                                  🏭 {avgAlgodoeiraFromCargas !== null ? formatTimeMinutes(avgAlgodoeiraFromCargas) : '-'} | 🌾 {avgLavouraFromCargas !== null ? formatTimeMinutes(avgLavouraFromCargas) : '-'}
                                 </p>
                               )}
                               {/* Status Parada Puxe */}
@@ -1141,10 +1151,10 @@ function DashboardPortariaTV() {
                           <div className="min-w-0 flex-1">
                             <p className="font-semibold text-emerald-400 text-[clamp(0.5rem,0.75vw,0.8rem)]">{item.plate}</p>
                             <p className="text-[clamp(0.45rem,0.65vw,0.7rem)] text-emerald-300">{item.driver}</p>
-                            {/* Tempos de viagem */}
-                            {(item.tempo_algodoeira > 0 || item.tempo_lavoura > 0) && (
+                            {/* Média de tempos */}
+                            {(avgAlgodoeiraFromCargas !== null || avgLavouraFromCargas !== null) && (
                               <p className="text-[clamp(0.4rem,0.6vw,0.65rem)] text-emerald-200">
-                                🏭 {Math.round(item.tempo_algodoeira)}min | 🌾 {Math.round(item.tempo_lavoura)}min
+                                🏭 {avgAlgodoeiraFromCargas !== null ? formatTimeMinutes(avgAlgodoeiraFromCargas) : '-'} | 🌾 {avgLavouraFromCargas !== null ? formatTimeMinutes(avgLavouraFromCargas) : '-'}
                               </p>
                             )}
                           </div>
