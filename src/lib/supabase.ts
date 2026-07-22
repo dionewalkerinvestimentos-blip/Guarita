@@ -63,6 +63,9 @@ export interface CottonPull {
   observations?: string;
   parada_puxe?: boolean;
   hora_parada_puxe?: string;
+  hora_retomada_puxe?: string;
+  tempo_parado_minutos?: number;
+  tempo_permanencia_liquido_minutos?: number;
   created_by?: string;
   created_at?: string;
   updated_at?: string;

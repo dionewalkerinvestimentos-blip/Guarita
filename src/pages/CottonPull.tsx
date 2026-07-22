@@ -272,6 +272,53 @@ const CottonPull = () => {
     }
   };
 
+  const handleRetomaPuxe = async (recordId: string) => {
+    try {
+      const record = records.find(r => r.id === recordId);
+      if (!record || !record.hora_parada_puxe) {
+        toast({
+          title: "Erro",
+          description: "Registro de parada não encontrado.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const currentTime = new Date().toTimeString().slice(0, 8); // HH:MM:SS
+      
+      // Calcular tempo parado em minutos
+      const tempoParada = new Date(`1970-01-01T${record.hora_parada_puxe}`);
+      const tempoRetomada = new Date(`1970-01-01T${currentTime}`);
+      const tempoParadoMs = tempoRetomada.getTime() - tempoParada.getTime();
+      const tempoParadoMinutos = Math.round(tempoParadoMs / (1000 * 60));
+
+      // Calcular tempo de permanência líquido (entrada até retomada)
+      const tempoEntrada = new Date(`1970-01-01T${record.entry_time}`);
+      const tempoPermMs = tempoRetomada.getTime() - tempoEntrada.getTime();
+      const tempoPermMinutos = Math.round(tempoPermMs / (1000 * 60));
+
+      // Atualizar com dados de retomada
+      await updateRecord(recordId, { 
+        parada_puxe: false,
+        hora_retomada_puxe: currentTime,
+        tempo_parado_minutos: tempoParadoMinutos,
+        tempo_permanencia_liquido_minutos: tempoPermMinutos
+      });
+
+      toast({
+        title: "Puxe Retomado! ▶️",
+        description: `${record.plate} - Retomada às ${currentTime.slice(0, 5)} (Parada: ${tempoParadoMinutos}min)`,
+      });
+    } catch (error) {
+      console.error('Erro ao retomar puxe:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível retomar o puxe.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const confirmExit = async () => {
     if (!exitTime) {
       toast({
@@ -530,6 +577,16 @@ const CottonPull = () => {
                             >
                               <PauseCircle className="h-4 w-4 mr-1" />
                               Parada Puxe
+                            </Button>
+                          )}
+                          {record.parada_puxe && (
+                            <Button 
+                              onClick={() => handleRetomaPuxe(record.id)}
+                              size="sm"
+                              variant="outline"
+                              className="bg-blue-400/20 hover:bg-blue-400/30 text-blue-700 border-blue-400"
+                            >
+                              ▶️ Retomar Puxe
                             </Button>
                           )}
                           <Button 
