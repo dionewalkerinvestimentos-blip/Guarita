@@ -287,13 +287,8 @@ function DashboardPortariaTV() {
 
   const loading = loadingVehicles || loadingCotton || loadingRain || loadingLoadings || loadingMaterials || loadingEquipment;
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-black text-green-400 text-[clamp(1rem,1.5vw,1.3rem)]">
-        <Loader2 className="animate-spin mr-3" /> Carregando informações...
-      </div>
-    );
-  }
+  // Nota: Removido 'if (loading) return' pois violava regras de hooks
+  // O carregamento agora é silencioso e mostra UI parcial enquanto carrega
 
   const today = new Date();
   const todayStr = getTodayLocalDate(); // Usa a função local
