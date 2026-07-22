@@ -402,6 +402,17 @@ function DashboardPortariaTV() {
   // Rolos puxados hoje
   const todayRolls = cottonPullRecords?.filter(r => r.date === todayStr) || [];
 
+  // Agregar tempos por placa a partir dos dados de cargas (view)
+  const temposPorPlaca = (cargas || []).reduce((acc, carga) => {
+    if (!acc[carga.plate]) {
+      acc[carga.plate] = { tempo_algodoeira: 0, tempo_lavoura: 0, viagens_com_tempo: 0 };
+    }
+    acc[carga.plate].tempo_algodoeira += (carga.tempo_algodoeira || 0);
+    acc[carga.plate].tempo_lavoura += (carga.tempo_lavoura || 0);
+    acc[carga.plate].viagens_com_tempo += 1;
+    return acc;
+  }, {} as Record<string, {tempo_algodoeira: number, tempo_lavoura: number, viagens_com_tempo: number}>);
+
   // Estatísticas de chuva - corrigido para respeitar as datas corretas
   const chuvaHoje = rainRecords?.filter(r => convertIsoToLocalDateString(r.date) === todayStr && r.millimeters !== null).reduce((sum, r) => sum + (r.millimeters || 0), 0) || 0;
   const chuvaSemana = rainRecords?.filter(r => convertIsoToLocalDateString(r.date) && convertIsoToLocalDateString(r.date)! >= thisWeekStartStr && convertIsoToLocalDateString(r.date)! <= thisWeekEndStr && r.millimeters !== null).reduce((sum, r) => sum + (r.millimeters || 0), 0) || 0;
@@ -428,9 +439,12 @@ function DashboardPortariaTV() {
     acc[r.plate].rolos += r.rolls;
     acc[r.plate].viagens += 1;
     acc[r.plate].driver = r.driver;
-    // Acumular tempos de viagem (se tiver dados de puxe_viagens)
-    if (r.tempo_algodoeira) acc[r.plate].tempo_algodoeira += r.tempo_algodoeira;
-    if (r.tempo_lavoura) acc[r.plate].tempo_lavoura += r.tempo_lavoura;
+    // Agregar tempos a partir da view (cargas)
+    const temposPlaca = temposPorPlaca[r.plate];
+    if (temposPlaca) {
+      acc[r.plate].tempo_algodoeira = temposPlaca.tempo_algodoeira;
+      acc[r.plate].tempo_lavoura = temposPlaca.tempo_lavoura;
+    }
     return acc;
   }, {} as Record<string, {plate: string, driver: string, rolos: number, viagens: number, tempo_algodoeira: number, tempo_lavoura: number}>);
 
@@ -531,6 +545,23 @@ function DashboardPortariaTV() {
   const thisMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
   const monthRolls = cottonPullRecords?.filter(r => r.date && r.date.startsWith(thisMonth)) || [];
   
+  // Agregar tempos do mês por placa (a partir de registros com tempos preenchidos)
+  const temposMesPorPlaca = monthRolls.reduce((acc, r) => {
+    if (!acc[r.plate]) {
+      acc[r.plate] = { tempo_algodoeira: 0, tempo_lavoura: 0 };
+    }
+    // Se tem entry_time e exit_time, calcular tempo
+    if (r.entry_time && r.exit_time) {
+      const [hEntry, mEntry] = r.entry_time.split(':').map(Number);
+      const [hExit, mExit] = r.exit_time.split(':').map(Number);
+      const minutos = (hExit * 60 + mExit) - (hEntry * 60 + mEntry);
+      if (minutos > 0) {
+        acc[r.plate].tempo_algodoeira += minutos;
+      }
+    }
+    return acc;
+  }, {} as Record<string, {tempo_algodoeira: number, tempo_lavoura: number}>);
+  
   const rankingMes = monthRolls.reduce((acc, r) => {
     if (!acc[r.plate]) {
       acc[r.plate] = { 
@@ -545,9 +576,12 @@ function DashboardPortariaTV() {
     acc[r.plate].rolos += r.rolls;
     acc[r.plate].viagens += 1;
     acc[r.plate].driver = r.driver;
-    // Acumular tempos de viagem
-    if (r.tempo_algodoeira) acc[r.plate].tempo_algodoeira += r.tempo_algodoeira;
-    if (r.tempo_lavoura) acc[r.plate].tempo_lavoura += r.tempo_lavoura;
+    // Usar tempos agregados do mês
+    const temposPlaca = temposMesPorPlaca[r.plate];
+    if (temposPlaca) {
+      acc[r.plate].tempo_algodoeira = temposPlaca.tempo_algodoeira;
+      acc[r.plate].tempo_lavoura = temposPlaca.tempo_lavoura;
+    }
     return acc;
   }, {} as Record<string, {plate: string, driver: string, rolos: number, viagens: number, tempo_algodoeira: number, tempo_lavoura: number}>);
 
