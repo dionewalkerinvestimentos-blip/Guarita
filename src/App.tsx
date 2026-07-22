@@ -17,6 +17,7 @@ import Reports from "./pages/Reports";
 import RelatorioGestaoPuxe from "./pages/RelatorioGestaoPuxe";
 import MaterialReceipts from "./pages/MaterialReceipts";
 import Aeracao from "./pages/Aeracao";
+import Saldos from "./pages/Saldos";
 import NotFound from "./pages/NotFound";
 import { hasAuthenticatedSession } from "./hooks/use-auth";
 
@@ -55,6 +56,7 @@ const App = () => (
             <Route path="/reports/gestao-puxe" element={<RelatorioGestaoPuxe />} />
             <Route path="/materials" element={<MaterialReceipts />} />
             <Route path="/aeracao" element={<Aeracao />} />
+            <Route path="/saldos" element={<Saldos />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

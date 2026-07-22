@@ -178,6 +178,19 @@ export interface RainAlert {
   created_at?: string;
 }
 
+export interface ProductBalance {
+  id?: string;
+  product: string;
+  unit_type: string;
+  month: number;
+  year: number;
+  produzido: number;
+  embarcado: number;
+  updated_at?: string;
+  updated_by?: string;
+  created_at?: string;
+}
+
 export interface AerationEvent {
   id: string;
   barracao: number;

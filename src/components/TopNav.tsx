@@ -12,6 +12,7 @@ export const TopNav = () => {
             <Link to="/materials" className="text-sm hover:underline">Materiais</Link>
             <Link to="/equipment" className="text-sm hover:underline">Equipamentos</Link>
             <Link to="/aeracao" className="text-sm hover:underline">Aeração</Link>
+            <Link to="/saldos" className="text-sm hover:underline">Saldos</Link>
           </nav>
         </div>
         <div>

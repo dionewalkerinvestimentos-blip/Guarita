@@ -11,6 +11,8 @@ import ControleGuaritaFitScreen from "@/components/ControleGuaritaFitScreen";
 import logo from "@/assets/BF_logo.png";
 import { getTodayLocalDate, convertIsoToLocalDateString, toLocalDateString } from "@/lib/date-utils";
 import { useAeration } from '@/hooks/use-aeration'
+import { supabase } from '@/lib/supabase'
+import type { ProductBalance } from '@/lib/supabase'
 
 function DashboardPortariaTV() {
   const { vehicles, loading: loadingVehicles, refetch: refetchVehicles } = useVehicles();
@@ -22,7 +24,38 @@ function DashboardPortariaTV() {
   const { data: gestaoTempo, loading: loadingGestaoTempo, refetch: refetchGestaoTempo } = useGestaoTempo();
   const { cargas, loading: loadingCargas, refetch: refetchCargas } = useGestaoTempoCargas();
   const { isRaining, toggleRainAlert } = useRainAlert();
-  
+
+  // Saldos de produção por produto
+  const [productBalances, setProductBalances] = useState<Record<string, ProductBalance>>({});
+  useEffect(() => {
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+    supabase
+      .from('product_balances')
+      .select('*')
+      .eq('month', month)
+      .eq('year', year)
+      .then(({ data }) => {
+        if (data) {
+          const map: Record<string, ProductBalance> = {};
+          data.forEach((row: ProductBalance) => { map[row.product] = row; });
+          setProductBalances(map);
+        }
+      });
+    // Subscribe realtime
+    const channel = supabase
+      .channel('product_balances_tv')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'product_balances' }, (payload) => {
+        const row = (payload.new || payload.old) as ProductBalance;
+        if (row?.month === month && row?.year === year) {
+          setProductBalances(prev => ({ ...prev, [row.product]: payload.new as ProductBalance }));
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   // Estado para modo claro/escuro com persistência
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('tv-mode-theme');
@@ -794,6 +827,53 @@ function DashboardPortariaTV() {
                           </div>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Saldos de Produção */}
+                  {productBalances[produto] && (
+                    <div className={`mt-[clamp(0.3rem,0.6vw,0.5rem)] border-t pt-[clamp(0.2rem,0.4vw,0.4rem)] flex-shrink-0 transition-colors duration-300 ${
+                      isDarkMode ? 'border-emerald-700/30' : 'border-emerald-300/40'
+                    }`}>
+                      <div className="grid grid-cols-3 gap-[clamp(0.2rem,0.4vw,0.3rem)] text-center">
+                        <div>
+                          <p className={`text-[clamp(0.45rem,0.65vw,0.6rem)] font-semibold uppercase transition-colors duration-300 ${
+                            isDarkMode ? 'text-purple-400' : 'text-purple-700'
+                          }`}>Produzido</p>
+                          <p className={`text-[clamp(0.55rem,0.8vw,0.7rem)] font-bold transition-colors duration-300 ${
+                            isDarkMode ? 'text-purple-300' : 'text-purple-800'
+                          }`}>
+                            {(productBalances[produto].produzido ?? 0).toLocaleString('pt-BR')}
+                          </p>
+                        </div>
+                        <div>
+                          <p className={`text-[clamp(0.45rem,0.65vw,0.6rem)] font-semibold uppercase transition-colors duration-300 ${
+                            isDarkMode ? 'text-orange-400' : 'text-orange-700'
+                          }`}>Embarcado</p>
+                          <p className={`text-[clamp(0.55rem,0.8vw,0.7rem)] font-bold transition-colors duration-300 ${
+                            isDarkMode ? 'text-orange-300' : 'text-orange-800'
+                          }`}>
+                            {(productBalances[produto].embarcado ?? 0).toLocaleString('pt-BR')}
+                          </p>
+                        </div>
+                        <div>
+                          <p className={`text-[clamp(0.45rem,0.65vw,0.6rem)] font-semibold uppercase transition-colors duration-300 ${
+                            isDarkMode ? 'text-emerald-400' : 'text-emerald-700'
+                          }`}>Saldo</p>
+                          <p className={`text-[clamp(0.55rem,0.8vw,0.7rem)] font-bold transition-colors duration-300 ${
+                            (productBalances[produto].produzido - productBalances[produto].embarcado) < 0
+                              ? 'text-red-400'
+                              : isDarkMode ? 'text-emerald-300' : 'text-emerald-800'
+                          }`}>
+                            {((productBalances[produto].produzido ?? 0) - (productBalances[produto].embarcado ?? 0)).toLocaleString('pt-BR')}
+                          </p>
+                        </div>
+                      </div>
+                      <p className={`text-center text-[clamp(0.4rem,0.55vw,0.5rem)] mt-[clamp(0.1rem,0.2vw,0.2rem)] transition-colors duration-300 ${
+                        isDarkMode ? 'text-emerald-600' : 'text-emerald-500'
+                      }`}>
+                        {productBalances[produto].unit_type} · mês atual
+                      </p>
                     </div>
                   )}
                 </CardContent>
