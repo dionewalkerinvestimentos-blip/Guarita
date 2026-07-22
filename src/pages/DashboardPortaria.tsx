@@ -453,17 +453,22 @@ function DashboardPortariaTV() {
   // Médias calculadas a partir das cargas do dia (ignora zeros)
   const avgLavouraFromCargas = (() => {
     const list = (cargas || []).filter(c => c.tempo_lavoura && c.tempo_lavoura > 0);
-    if (!list || list.length === 0) return null;
+    if (!list || list.length === 0) return 0; // Retorna 0 ao invés de null
     const sum = list.reduce((s, x) => s + (x.tempo_lavoura || 0), 0);
     return Math.round(sum / list.length);
   })();
 
   const avgAlgodoeiraFromCargas = (() => {
     const list = (cargas || []).filter(c => c.tempo_algodoeira && c.tempo_algodoeira > 0);
-    if (!list || list.length === 0) return null;
+    if (!list || list.length === 0) return 0; // Retorna 0 ao invés de null
     const sum = list.reduce((s, x) => s + (x.tempo_algodoeira || 0), 0);
     return Math.round(sum / list.length);
   })();
+
+  // Debug: Log dos tempos calculados
+  useEffect(() => {
+    console.log('📊 TV Gestão Tempo - Cargas:', cargas?.length || 0, 'Algodoeira:', avgAlgodoeiraFromCargas, 'Lavoura:', avgLavouraFromCargas);
+  }, [cargas, avgAlgodoeiraFromCargas, avgLavouraFromCargas]);
 
   // Verificar quais caminhões estão na algodoeira agora
   const trucksInAlgodoeira = new Set(
@@ -1085,13 +1090,11 @@ function DashboardPortariaTV() {
                                 {item.driver}
                               </p>
                               {/* Média de tempos do dia */}
-                              {(avgAlgodoeiraFromCargas !== null || avgLavouraFromCargas !== null) && (
-                                <p className={`text-[clamp(0.4rem,0.6vw,0.65rem)] mt-[clamp(0.1rem,0.15vh,0.15rem)] ${
-                                  isInAlgodoeira && !hasParadaPuxe ? 'text-yellow-100' : 'text-emerald-200'
-                                }`}>
-                                  🏭 {avgAlgodoeiraFromCargas !== null ? formatTimeMinutes(avgAlgodoeiraFromCargas) : '-'} | 🌾 {avgLavouraFromCargas !== null ? formatTimeMinutes(avgLavouraFromCargas) : '-'}
-                                </p>
-                              )}
+                              <p className={`text-[clamp(0.4rem,0.6vw,0.65rem)] mt-[clamp(0.1rem,0.15vh,0.15rem)] ${
+                                isInAlgodoeira && !hasParadaPuxe ? 'text-yellow-100' : 'text-emerald-200'
+                              }`}>
+                                🏭 {formatTimeMinutes(avgAlgodoeiraFromCargas)} | 🌾 {formatTimeMinutes(avgLavouraFromCargas)}
+                              </p>
                               {/* Status Parada Puxe */}
                               {hasParadaPuxe && (
                                 <div className="mt-[clamp(0.1rem,0.2vh,0.2rem)]">
@@ -1152,11 +1155,9 @@ function DashboardPortariaTV() {
                             <p className="font-semibold text-emerald-400 text-[clamp(0.5rem,0.75vw,0.8rem)]">{item.plate}</p>
                             <p className="text-[clamp(0.45rem,0.65vw,0.7rem)] text-emerald-300">{item.driver}</p>
                             {/* Média de tempos */}
-                            {(avgAlgodoeiraFromCargas !== null || avgLavouraFromCargas !== null) && (
-                              <p className="text-[clamp(0.4rem,0.6vw,0.65rem)] text-emerald-200">
-                                🏭 {avgAlgodoeiraFromCargas !== null ? formatTimeMinutes(avgAlgodoeiraFromCargas) : '-'} | 🌾 {avgLavouraFromCargas !== null ? formatTimeMinutes(avgLavouraFromCargas) : '-'}
-                              </p>
-                            )}
+                            <p className="text-[clamp(0.4rem,0.6vw,0.65rem)] text-emerald-200">
+                              🏭 {formatTimeMinutes(avgAlgodoeiraFromCargas)} | 🌾 {formatTimeMinutes(avgLavouraFromCargas)}
+                            </p>
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0 ml-1">
