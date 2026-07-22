@@ -41,6 +41,7 @@ import {
   Sun,
   Cloud,
   Fan,
+  Scale,
 } from "lucide-react";
 import {
   useVehicles,
@@ -494,6 +495,14 @@ const Dashboard = () => {
       color: "text-cyan-600",
       bgColor: "bg-cyan-50",
       route: "/aeracao",
+    },
+    {
+      title: "Saldos",
+      description: "Produção e embarcado",
+      icon: Scale,
+      color: "text-indigo-600",
+      bgColor: "bg-indigo-50",
+      route: "/saldos",
     },
     {
       title: "Relatórios",
