@@ -404,12 +404,14 @@ function DashboardPortariaTV() {
 
   // Agregar tempos por placa a partir dos dados de cargas (view)
   const temposPorPlaca = (cargas || []).reduce((acc, carga) => {
-    if (!acc[carga.plate]) {
-      acc[carga.plate] = { tempo_algodoeira: 0, tempo_lavoura: 0, viagens_com_tempo: 0 };
+    const key = carga.placa || (carga as unknown as {plate: string}).plate;
+    if (!key) return acc;
+    if (!acc[key]) {
+      acc[key] = { tempo_algodoeira: 0, tempo_lavoura: 0, viagens_com_tempo: 0 };
     }
-    acc[carga.plate].tempo_algodoeira += (carga.tempo_algodoeira || 0);
-    acc[carga.plate].tempo_lavoura += (carga.tempo_lavoura || 0);
-    acc[carga.plate].viagens_com_tempo += 1;
+    acc[key].tempo_algodoeira += (carga.tempo_algodoeira || 0);
+    acc[key].tempo_lavoura += (carga.tempo_lavoura || 0);
+    acc[key].viagens_com_tempo += 1;
     return acc;
   }, {} as Record<string, {tempo_algodoeira: number, tempo_lavoura: number, viagens_com_tempo: number}>);
 
