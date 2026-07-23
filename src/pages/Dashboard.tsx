@@ -1658,6 +1658,11 @@ const Dashboard = () => {
                                 <p className="text-xs font-medium text-purple-600 truncate">
                                   {loading.carrier}
                                 </p>
+                                {loading.client && (
+                                  <p className="text-xs font-medium text-emerald-700 truncate">
+                                    👤 {loading.client}
+                                  </p>
+                                )}
                                 <p className="text-xs font-medium text-blue-600 truncate">
                                   {loading.destination}
                                 </p>
