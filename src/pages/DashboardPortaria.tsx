@@ -409,8 +409,8 @@ function DashboardPortariaTV() {
     if (!acc[key]) {
       acc[key] = { tempo_algodoeira: 0, tempo_lavoura: 0, viagens_com_tempo: 0 };
     }
-    acc[key].tempo_algodoeira += (carga.tempo_algodoeira || 0);
-    acc[key].tempo_lavoura += (carga.tempo_lavoura || 0);
+    acc[key].tempo_algodoeira += Number(carga.tempo_algodoeira || 0);
+    acc[key].tempo_lavoura += Number(carga.tempo_lavoura || 0);
     acc[key].viagens_com_tempo += 1;
     return acc;
   }, {} as Record<string, {tempo_algodoeira: number, tempo_lavoura: number, viagens_com_tempo: number}>);
@@ -462,17 +462,18 @@ function DashboardPortariaTV() {
   if (cargas && cargas.length > 0) console.log('DEBUG: first cargas sample', cargas.slice(0,5));
 
   // Médias calculadas a partir das cargas do dia (ignora zeros)
+  // Nota: valores da view chegam como strings, converter com Number()
   const avgLavouraFromCargas = (() => {
-    const list = (cargas || []).filter(c => c.tempo_lavoura && c.tempo_lavoura > 0);
-    if (!list || list.length === 0) return 0; // Retorna 0 ao invés de null
-    const sum = list.reduce((s, x) => s + (x.tempo_lavoura || 0), 0);
+    const list = (cargas || []).filter(c => Number(c.tempo_lavoura) > 0);
+    if (!list || list.length === 0) return 0;
+    const sum = list.reduce((s, x) => s + Number(x.tempo_lavoura || 0), 0);
     return Math.round(sum / list.length);
   })();
 
   const avgAlgodoeiraFromCargas = (() => {
-    const list = (cargas || []).filter(c => c.tempo_algodoeira && c.tempo_algodoeira > 0);
-    if (!list || list.length === 0) return 0; // Retorna 0 ao invés de null
-    const sum = list.reduce((s, x) => s + (x.tempo_algodoeira || 0), 0);
+    const list = (cargas || []).filter(c => Number(c.tempo_algodoeira) > 0);
+    if (!list || list.length === 0) return 0;
+    const sum = list.reduce((s, x) => s + Number(x.tempo_algodoeira || 0), 0);
     return Math.round(sum / list.length);
   })();
 
@@ -506,15 +507,13 @@ function DashboardPortariaTV() {
   };
 
   // Função para formatar tempo (minutos para horas se > 60)
-  const formatTime = (minutes: number): string => {
-    if (minutes < 60) {
-      return `${minutes} min`;
-    }
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    if (remainingMinutes === 0) {
-      return `${hours}h`;
-    }
+  const formatTime = (minutes: number | string | null | undefined): string => {
+    const m = Number(minutes);
+    if (!m || isNaN(m) || m <= 0) return '0min';
+    if (m < 60) return `${m}min`;
+    const hours = Math.floor(m / 60);
+    const remainingMinutes = m % 60;
+    if (remainingMinutes === 0) return `${hours}h`;
     return `${hours}h ${remainingMinutes}min`;
   };
 
