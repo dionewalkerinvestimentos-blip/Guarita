@@ -1038,10 +1038,15 @@ export const useGestaoTempoCargas = () => {
         .order('placa', { ascending: true })
         .order('viagem_num', { ascending: true })
 
-      if (error) throw error
-      setCargas(data || [])
+      if (error) {
+        console.error('❌ ERRO view_gestao_tempo_cargas:', error.code, error.message, error.details)
+        setCargas([])
+      } else {
+        console.log('✅ view_gestao_tempo_cargas:', data?.length, 'registros', data?.slice(0,2))
+        setCargas(data || [])
+      }
     } catch (error) {
-      console.error('Erro ao buscar cargas:', error)
+      console.error('❌ Erro inesperado ao buscar cargas:', error)
       setCargas([])
     } finally {
       setLoading(false)
